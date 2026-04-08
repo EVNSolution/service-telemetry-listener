@@ -1,0 +1,54 @@
+name: Build service-telemetry-listener image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY: service-telemetry-listener
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
+        with:
+          role-to-assume: ${{ vars.GH_ACTIONS_ECR_BUILD_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: 902837199612
+          role-session-name: service-telemetry-listener-ecr-build
+          mask-aws-account-id: true
+          unset-current-credentials: true
+          retry-max-attempts: 4
+          action-timeout-s: 120
+
+      - name: Resolve image tags
+        id: meta
+        run: |
+          echo "sha_tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "image_uri=902837199612.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" | \
+            docker login --username AWS --password-stdin \
+            "902837199612.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+      - name: Build image
+        run: |
+          docker build -t "${{ steps.meta.outputs.image_uri }}" .
+
+      - name: Push image
+        run: |
+          docker push "${{ steps.meta.outputs.image_uri }}"
