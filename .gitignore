@@ -9,3 +9,17 @@ __pycache__/
 .env.local
 .env.*.local
 !.env.example
+
+# Public repo hygiene
+.venv312/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage/
+htmlcov/
+*.sqlite3
+*.log
+.vscode/
+.idea/
