@@ -1,5 +1,7 @@
 # service-telemetry-listener
 
+## Purpose / Boundary
+
 `service-telemetry-listener` is the MQTT ingress worker for telemetry payloads.
 
 Current role:
@@ -8,25 +10,52 @@ Current role:
 - forward raw-first ingest requests to `service-telemetry-hub`
 - apply retry classification and log ingest outcomes
 
-Future role:
-- dead-letter handling
-- topic routing expansion
-- richer source-identity parsing and validation before hub forwarding
-
 Non-owned concerns:
 - database writes
 - timeseries normalization
 - latest snapshot or diagnostic persistence
 - vehicle or terminal master writes
+- public HTTP route ownership
+- 플랫폼 전체 compose와 gateway 설정
 
-Dependency:
-- `service-telemetry-hub` owns the ingest API and all telemetry storage
+## Runtime Contract / Local Role
 
-Entry point:
-- `entrypoint.sh` -> `python -m telemetry_listener.main`
+- compose service는 `telemetry-listener` 다.
+- public gateway prefix는 없다.
+- dependency:
+  - `service-telemetry-hub` owns ingest API and telemetry storage
+  - `service-telemetry-dead-letter` owns failed-payload admin/read surface
+- entrypoint: `entrypoint.sh` -> `python -m telemetry_listener.main`
 
-Current truth:
+## Local Run / Verification
+
+- local worker run: `. .venv/bin/activate && python -m telemetry_listener.main`
+- fixture publish helpers:
+  - `../../development/integration-local-stack/scripts/publish_sample_telemetry.sh`
+  - `../../development/integration-local-stack/scripts/publish_malformed_telemetry.sh`
+
+## Image Build / Deploy Contract
+
+- GitHub Actions workflow 이름은 `Build service-telemetry-listener image` 다.
+- workflow는 immutable `service-telemetry-listener:<sha>` 이미지를 ECR로 publish 한다.
+- shared ECS deploy, service desired count, and worker env wiring are owned by `../infra-ev-dashboard-platform/`.
+
+## Environment Files And Safety Notes
+
+- 이 worker는 `Slice 7b` 이고 `desired=0` 가 기본값이다.
+- public HTTP proof가 없으므로 honest verification은 ECS state, CloudWatch logs, broker connectivity 로 본다.
+- broker endpoint와 credentials 확정 전에는 활성화하지 않는다.
+
+## Key Tests Or Verification Commands
+
+- worker boot: `. .venv/bin/activate && python -m telemetry_listener.main`
+- local malformed payload smoke: `../../development/integration-local-stack/scripts/publish_malformed_telemetry.sh`
+- local sample payload smoke: `../../development/integration-local-stack/scripts/publish_sample_telemetry.sh`
+
+## Root Docs / Runbooks
+
+- `../../docs/boundaries/`
+- `../../docs/mappings/`
+- `../../docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md`
 - `../../docs/decisions/specs/2026-03-21-telemetry-listener-design.md`
-
-Historical context:
 - `../../docs/archive/historical/rollout/2026-03-21-telemetry-listener-implementation-plan.md`
