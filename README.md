@@ -43,7 +43,8 @@ Non-owned concerns:
 
 - GitHub Actions workflow 이름은 `Build service-telemetry-listener image` 다.
 - workflow는 immutable `service-telemetry-listener:<sha>` 이미지를 ECR로 publish 한다.
-- shared ECS deploy, service desired count, and worker env wiring are owned by `../infra-ev-dashboard-platform/`.
+- runtime rollout은 `../runtime-prod-release/` 가 소유한다.
+- production runtime shape와 canonical inventory는 `../runtime-prod-platform/` 이 소유한다.
 
 ## Environment Files And Safety Notes
 
