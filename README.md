@@ -36,6 +36,11 @@ Non-owned concerns:
 
 ## Image Build / Deploy Contract
 
+- prod contract is build, test, and immutable image publish only
+- production runtime rollout ownership belongs to `runtime-prod-release`
+- build and publish auth uses `ECR_BUILD_AWS_ROLE_ARN` plus shared `AWS_REGION`
+
+
 - GitHub Actions workflow 이름은 `Build service-telemetry-listener image` 다.
 - workflow는 immutable `service-telemetry-listener:<sha>` 이미지를 ECR로 publish 한다.
 - shared ECS deploy, service desired count, and worker env wiring are owned by `../infra-ev-dashboard-platform/`.
