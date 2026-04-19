@@ -42,8 +42,8 @@ Non-owned concerns:
 
 ## Environment Files And Safety Notes
 
-- 이 worker는 `Slice 7b` 이고 `desired=0` 가 기본값이다.
-- public HTTP proof가 없으므로 honest verification은 ECS state, CloudWatch logs, broker connectivity 로 본다.
+- 이 worker는 internal-only MQTT ingress worker이고 `desired=0` 가 기본값이다.
+- public HTTP proof가 없으므로 honest verification은 runtime state, service logs, broker connectivity 로 본다.
 - broker endpoint와 credentials 확정 전에는 활성화하지 않는다.
 
 ## Key Tests Or Verification Commands
