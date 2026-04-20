@@ -24,7 +24,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
-          role-to-assume: ${{ vars.GH_ACTIONS_ECR_BUILD_ROLE_ARN }}
+          role-to-assume: ${{ vars.ECR_BUILD_AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
           allowed-account-ids: 902837199612
           role-session-name: service-telemetry-listener-ecr-build
