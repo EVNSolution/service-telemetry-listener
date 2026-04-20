@@ -30,15 +30,13 @@ Non-owned concerns:
 ## Local Run / Verification
 
 - local worker run: `. .venv/bin/activate && python -m telemetry_listener.main`
-- fixture publish helpers:
-  - `../../development/integration-local-stack/scripts/publish_sample_telemetry.sh`
-  - `../../development/integration-local-stack/scripts/publish_malformed_telemetry.sh`
+- fixture publish helpers는 out-of-band local support tooling에서 관리한다.
 
 ## Image Build / Deploy Contract
 
 - GitHub Actions workflow 이름은 `Build service-telemetry-listener image` 다.
 - workflow는 immutable `service-telemetry-listener:<sha>` 이미지를 ECR로 publish 한다.
-- shared ECS deploy, service desired count, and worker env wiring are owned by `../infra-ev-dashboard-platform/`.
+- production rollout은 `../runtime-prod-release/` 가 수행하고, runtime shape와 inventory는 `../runtime-prod-platform/` 이 소유한다.
 
 ## Environment Files And Safety Notes
 
@@ -49,8 +47,7 @@ Non-owned concerns:
 ## Key Tests Or Verification Commands
 
 - worker boot: `. .venv/bin/activate && python -m telemetry_listener.main`
-- local malformed payload smoke: `../../development/integration-local-stack/scripts/publish_malformed_telemetry.sh`
-- local sample payload smoke: `../../development/integration-local-stack/scripts/publish_sample_telemetry.sh`
+- malformed/sample payload smoke는 out-of-band local support tooling을 사용한다.
 
 ## Root Docs / Runbooks
 
